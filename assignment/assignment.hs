@@ -17,6 +17,8 @@ import Data.Char(intToDigit)
 -- Implement a version vcalled `myreverse` using `foldl`.
 
 -- myreverse :: [a] -> [a]
+switch x y = y:x
+myreverse a = foldl (switch) [] a
 
 -------
 -- 2 --
@@ -27,8 +29,13 @@ import Data.Char(intToDigit)
 -- might need to use `++` rather than `:` to build the result)
 
 -- myfilter :: (a -> Bool) -> [a] -> [a]
-
-
+checker func list x = 
+  if func x
+    then list++[x]
+  else
+    list  
+myfilter func x= foldl (checker func) [] x
+--i'm not really sure why i only have to pass one parameter into checker, but everytime i passed more i got errors.
 -------
 -- 3 --
 -------
@@ -45,6 +52,30 @@ import Data.Char(intToDigit)
 
 -- myor:: [ Bool ] -> Bool 
 
+--andOr func first second = 
+--  if first func second
+--    then True
+--    else False
+
+--myand list = foldl (allTrue (&&)) True list
+--myor list = foldl (andOr (||)) False list
+
+--not really sure what went wrong here so I just have to do it a longer way
+
+allTrue first second = 
+  if first && second
+    then True
+    else False
+
+myand list = foldl (allTrue) True list
+
+anyTrue first second = 
+  if first || second
+    then True
+    else False
+
+myor list = foldl (anyTrue) False list
+
 
 ----------------------------------------------
 --
@@ -58,19 +89,23 @@ import Data.Char(intToDigit)
 -- write a data type named Measure that lets you specify a meansurement using
 -- either unit. Be sure to derive Eq and Show.
 
---data Measure = ...
+data Measure = MM Float | IN Float
 
 -- Now write a function that takes a measurement. If it is already in millimeters,
 -- return it. Otherwise convert the measurement n inches to millimeters and
 -- return a new metric Measure value. (Use 25.4 as the conversion factor)
 
--- ensureMetric:: Measure -> Measure
+ensureMetric (MM num) = num
+ensureMetric (IN num) = num*25.4
+
+
 
 -- Finally use `map` to take a list of Measure values, and return a new
 -- list where all measurements are in metric.
 
--- listToMetric:: [ Measure ] -> [ Measure ]
+--listToMetric:: [ Measure ] -> [ Measure ]
 
+listToMetric list = map (ensureMetric) list
 
 
 -----------------------------------
