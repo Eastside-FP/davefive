@@ -17,7 +17,7 @@ import Data.Char(intToDigit)
 -- Implement a version vcalled `myreverse` using `foldl`.
 
 -- myreverse :: [a] -> [a]
-
+myreverse a = foldl (\x1 x2 -> x2:x1) [] a
 -------
 -- 2 --
 -------
@@ -26,8 +26,12 @@ import Data.Char(intToDigit)
 -- predicate returns `True`. Implement `myfilter` using `foldl`. (Hint: you 
 -- might need to use `++` rather than `:` to build the result)
 
--- myfilter :: (a -> Bool) -> [a] -> [a]
 
+select pred a x = 
+  if pred x
+    then a ++ [x] --looks like I did
+    else a
+myfilter pred a = foldl (select pred) [] a
 
 -------
 -- 3 --
@@ -42,8 +46,34 @@ import Data.Char(intToDigit)
 -- out how Haskell worked this out.)
   
 -- myand:: [ Bool ] -> Bool 
+count [] = 0 
+count (x:xs) =
+    n + count xs
+    where                           
+        n = if x then 1 else 0
+        
+myand a = 
+  if count a == length a     -- I don't think I have library functions enabled/working
+    then True
+    else False
+
+myand_extra a =
+  if length (myfilter (>0) a) == length a
+    then True
+    else False
+
+--alternative way if fromEnum worked
+--myand a = 
+--  if fromEnum(foldl (+) 0 a) == length a     -- whoops, I don't think I have library functions enabled/working
+--   then True
+--   else False
 
 -- myor:: [ Bool ] -> Bool 
+myor a = 
+  if count a > 0     -- whoops, I don't think I have library functions enabled/working
+    then True
+    else False
+
 
 
 ----------------------------------------------
@@ -58,18 +88,22 @@ import Data.Char(intToDigit)
 -- write a data type named Measure that lets you specify a meansurement using
 -- either unit. Be sure to derive Eq and Show.
 
---data Measure = ...
+data Measure = MM Float | IN Float 
+    deriving (Show, Eq)
 
 -- Now write a function that takes a measurement. If it is already in millimeters,
 -- return it. Otherwise convert the measurement n inches to millimeters and
 -- return a new metric Measure value. (Use 25.4 as the conversion factor)
 
--- ensureMetric:: Measure -> Measure
+ensureMetric:: Measure -> Measure
+ensureMetric (MM measurement) = MM measurement
+ensureMetric (IN measurement) = MM (measurement*25.4)
 
 -- Finally use `map` to take a list of Measure values, and return a new
 -- list where all measurements are in metric.
 
--- listToMetric:: [ Measure ] -> [ Measure ]
+listToMetric measure = map ensureMetric measure
+
 
 
 
@@ -86,20 +120,20 @@ test testNo got expected
 
 main = do
 
-  -- test "1a" (myreverse []::[Int]) []
-  -- test "1b" (myreverse [1])       [1]
-  -- test "1c" (myreverse [1,2])     [2,1]
-  -- test "1d" (myreverse "cat")     "tac"
+  test "1a" (myreverse []::[Int]) []
+  test "1b" (myreverse [1])       [1]
+  test "1c" (myreverse [1,2])     [2,1]
+  test "1d" (myreverse "cat")     "tac"
 
-  -- test "2a" (myfilter (>3) [1..6]) [4,5,6]
-  -- test "2b" (myfilter even [1..6]) [2,4,6]
-  -- test "2c" (myfilter (<0) [1..6]) []
+  test "2a" (myfilter (>3) [1..6]) [4,5,6]
+  test "2b" (myfilter even [1..6]) [2,4,6]
+  test "2c" (myfilter (<0) [1..6]) []
   
-  -- test "3a" (myand [True, True])   True
-  -- test "3b" (myand [True, False])  False
-  -- test "3c" (myand [False, True])  False
-  -- test "3d" (myand [False, False]) False
-  -- test "3e" (myand [True])         True
+  test "3a" (myand [True, True])   True
+  test "3b" (myand [True, False])  False
+  test "3c" (myand [False, True])  False
+  test "3d" (myand [False, False]) False
+  test "3e" (myand [True])         True
 
   -- test "3m" (myor  [True, True])   True
   -- test "3n" (myor  [True, False])  True
@@ -107,11 +141,11 @@ main = do
   -- test "3p" (myor  [False, False]) False
   -- test "3q" (myor  [True])         True
 
-  -- test "4a" (ensureMetric (MM 16)) (MM 16)
-  -- test "4b" (ensureMetric (IN 0))  (MM 0)
-  -- test "4c" (ensureMetric (IN 1))  (MM 25.4)
-  -- test "4c" (ensureMetric (IN 8))  (MM (8*25.4))
-  -- test "4d" (listToMetric [ MM 1, IN 2, MM 3, IN 4]) [ MM 1, MM 50.8, MM 3, MM 101.6]
+  test "4a" (ensureMetric (MM 16)) (MM 16)
+  test "4b" (ensureMetric (IN 0))  (MM 0)
+  test "4c" (ensureMetric (IN 1))  (MM 25.4)
+  test "4c" (ensureMetric (IN 8))  (MM (8*25.4))
+  test "4d" (listToMetric [ MM 1, IN 2, MM 3, IN 4]) [ MM 1, MM 50.8, MM 3, MM 101.6]
   print "Done"
 
   
